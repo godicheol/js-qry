@@ -1,6 +1,6 @@
 {
   "name": "js-qry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Query json in JavaScript.",
   "main": "index.js",
   "scripts": {
