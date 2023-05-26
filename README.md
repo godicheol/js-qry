@@ -65,6 +65,14 @@ var query = {
         name: {
             $regexp: "/Mike/i"
         }
+    }],
+    // dot notation
+    $and: [{
+        "size.weight": {
+            $gt: 90
+        }
+    }, {
+        "size.height": 100
     }]
 }
 

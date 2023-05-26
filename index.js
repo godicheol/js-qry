@@ -328,6 +328,9 @@
   var isItem = function(a) {
     return isBoolean(a, true) || isNumber(a, true) || isString(a, true) || isNull(a, true) || isUndefined(a, true);
   }
+  var isOperator = function(operator) {
+    return Object.keys(VALIDATORS).indexOf(operator) > -1;
+  }
   // query validators
   var VALIDATORS = {
     $and: function(a, b, strict) {
@@ -606,13 +609,30 @@
   }
   /**
    * 
-   * @param {any} a 
-   * @param {any} b 
-   * @param {string} operator 
+   * @param {any} a data
+   * @param {any} b query
+   * @param {string} key
    * @param {boolean} strict 
    * @returns 
    */
-  var chkQuery = function(a, b, operator, strict) {
+  var chkQuery = function(a, b, key, strict) {
+    var operator, parts, part;
+
+    if (isString(key, true)) {
+      parts = key.split("\."); // dot notation
+    } else if (isArray(key, true)) {
+      parts = key;
+    } else {
+      return false; // error
+    }
+
+    part = parts.shift();
+    if (parts.length > 0) {
+      return chkQuery(a[part], b, parts, strict);
+    } else {
+      operator = part;
+    }
+
     switch (operator) {
       case "$and":
         return VALIDATORS.$and(a, b, strict);
@@ -652,13 +672,30 @@
   }
   /**
    * 
-   * @param {any} a 
-   * @param {any} b 
-   * @param {string} operator 
+   * @param {any} a data
+   * @param {any} b query
+   * @param {string} key 
    * @param {boolean} strict 
    * @returns 
    */
-  var calcQuery = function(a, b, operator, strict) {
+  var calcQuery = function(a, b, key, strict) {
+    var operator, parts, part;
+
+    if (isString(key, true)) {
+      parts = key.split("\."); // dot notation
+    } else if (isArray(key, true)) {
+      parts = key;
+    } else {
+      throw new Error("Invalid argument type");
+    }
+
+    part = parts.shift();
+    if (parts.length > 0) {
+      return calcQuery(a[part], b, parts, strict);
+    } else {
+      operator = part;
+    }
+
     switch (operator) {
       case "$and":
         return OPERATORS.$and(a, b, strict);
@@ -710,13 +747,10 @@
    * @returns 
    */
   var execQuery = function(a, b, strict) {
-    if (!isObject(b)) {
+    if (!isObject(b, strict)) {
       return false;
     }
-    var arr = Object.entries(toObject(b)),
-      i,
-      key,
-      value;
+    var arr = Object.entries(toObject(b)), i, key, value;
     for (i = 0; i < arr.length; i++) {
       key = arr[i][0];
       value = arr[i][1];

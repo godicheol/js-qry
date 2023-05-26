@@ -65,6 +65,14 @@
                 height: 100,
                 weight: 100,
             },
+            attributes: {
+                size: {
+                    length: {
+                        isLength: true,
+                        value: 10
+                    }
+                }
+            },
             items: [
                 "bag",
                 "book",
@@ -104,6 +112,14 @@
                 name: {
                     $regexp: "/Mike/i"
                 }
+            }],
+            // dot notation
+            $and: [{
+                "size.weight": {
+                    $gt: 90
+                }
+            }, {
+                "size.height": 100
             }]
         }
 
@@ -524,6 +540,15 @@
             "total:",
             jsQry.exec(__data, __query)
         );
+
+        console.log(
+            "dot notation:",
+            jsQry.exec(__data, {
+                "size.weight": 100,
+                "attributes.size.length.isLength": true,
+                "attributes.size.length.value": 10,
+            })
+        )
 
     </script>
 </body>
