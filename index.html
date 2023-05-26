@@ -136,7 +136,7 @@
                 var query = JSON.parse(document.querySelector("#input-textarea").value);
 
                 var filtered = data.filter(function(item) {
-                    return jsQry.exec(item, query);
+                    return jsQry.match(item, query);
                 });
                 
                 document.querySelector("#output-textarea").value = JSON.stringify(filtered, null, 2)
@@ -149,21 +149,21 @@
         
         console.log(
             "strict:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: "10"
             })
         );
         
         console.log(
             "strict:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: "10"
             }, true)
         );
         
         console.log(
             "$gt:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $gt: 99
@@ -174,7 +174,7 @@
         
         console.log(
             "$gt:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $gt: 100
@@ -185,7 +185,7 @@
         
         console.log(
             "$gte:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $gte: "100"
@@ -196,7 +196,7 @@
         
         console.log(
             "$gte:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $gte: "101"
@@ -207,7 +207,7 @@
         
         console.log(
             "$lt:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $lt: 101
@@ -218,7 +218,7 @@
 
         console.log(
             "$lt:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $lt: 100
@@ -229,7 +229,7 @@
 
         console.log(
             "$lte:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $lte: 100
@@ -240,7 +240,7 @@
         
         console.log(
             "$lte:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 size: {
                     height: {
                         $lte: 99
@@ -251,7 +251,7 @@
         
         console.log(
             "$in:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $in: [8,9,10,11,12]
                 }
@@ -260,7 +260,7 @@
 
         console.log(
             "$in:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $in: [8,9,11,12]
                 }
@@ -269,7 +269,7 @@
 
         console.log(
             "$nin:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $nin: [8,9,11,12]
                 }
@@ -278,7 +278,7 @@
         
         console.log(
             "$nin:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $nin: [8,9,10,11,12]
                 }
@@ -287,7 +287,7 @@
 
         console.log(
             "$exists:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $exists: 1
                 }
@@ -296,7 +296,7 @@
 
         console.log(
             "$exists:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $exists: 0
                 }
@@ -305,7 +305,7 @@
         
         console.log(
             "$eq:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $eq: 10
                 }
@@ -314,7 +314,7 @@
         
         console.log(
             "$eq:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $eq: 9
                 }
@@ -323,7 +323,7 @@
         
         console.log(
             "$ne:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $ne: 9
                 }
@@ -332,7 +332,7 @@
         
         console.log(
             "$ne:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $ne: 10
                 }
@@ -341,7 +341,7 @@
         
         console.log(
             "$and:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $and: [{
                     id: 1,
                 }, {
@@ -352,7 +352,7 @@
         
         console.log(
             "$and:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $and: [{
                     id: 1,
                 }, {
@@ -363,7 +363,7 @@
         
         console.log(
             "$or:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $or: [{
                     id: 2,
                 }, {
@@ -374,7 +374,7 @@
         
         console.log(
             "$or:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $or: [{
                     id: 2,
                 }, {
@@ -385,7 +385,7 @@
         
         console.log(
             "$nor:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $nor: [{
                     id: 2,
                 }, {
@@ -396,7 +396,7 @@
         
         console.log(
             "$nor:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $nor: [{
                     id: 2,
                 }, {
@@ -407,7 +407,7 @@
         
         console.log(
             "$not:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $not: {
                     $and: [{
                         id: 1,
@@ -420,7 +420,7 @@
         
         console.log(
             "$not:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 $not: {
                     $and: [{
                         id: 1,
@@ -433,7 +433,7 @@
         
         console.log(
             "$regexp:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 name: {
                     $regexp: /mike/
                 }
@@ -442,7 +442,7 @@
         
         console.log(
             "$regexp:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 name: {
                     $regexp: /mite/
                 }
@@ -451,7 +451,7 @@
         
         console.log(
             "array:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: [
                     "bag",
                     "book",
@@ -464,7 +464,7 @@
         
         console.log(
             "array:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: [
                     "bag",
                     "book",
@@ -476,7 +476,7 @@
         
         console.log(
             "array & strict:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: [
                     "bag",
                     "book",
@@ -489,7 +489,7 @@
 
         console.log(
             "array & strict:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: [
                     "bag",
                     "book",
@@ -502,7 +502,7 @@
         
         console.log(
             "$size:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: {
                     $size: 5
                 }
@@ -511,7 +511,7 @@
         
         console.log(
             "$size:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 items: {
                     $size: 4
                 }
@@ -520,7 +520,7 @@
         
         console.log(
             "$mod:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $mod: [3, 1]
                 }
@@ -529,7 +529,7 @@
 
         console.log(
             "$mod:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 age: {
                     $mod: [3, 2]
                 }
@@ -538,12 +538,12 @@
         
         console.log(
             "total:",
-            jsQry.exec(__data, __query)
+            jsQry.match(__data, __query)
         );
 
         console.log(
             "dot notation:",
-            jsQry.exec(__data, {
+            jsQry.match(__data, {
                 "size.weight": 100,
                 "attributes.size.length.isLength": true,
                 "attributes.size.length.value": 10,

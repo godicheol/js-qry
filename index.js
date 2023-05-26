@@ -287,9 +287,8 @@
       if (!/^\/.*\/[dgimsuy]{0,7}$/.test(str)) {
         return false;
       }
+      var seen = {}, item;
       str = str.split("\/").pop();
-      var seen = {},
-        item;
       for (item of str.split("")) {
         if (seen[item]) {
           return false;
@@ -325,152 +324,38 @@
         throw new Error("Invalid argument type");
     }
   }
+
+  // item in array
   var isItem = function(a) {
     return isBoolean(a, true) || isNumber(a, true) || isString(a, true) || isNull(a, true) || isUndefined(a, true);
   }
-  var isOperator = function(operator) {
-    return Object.keys(VALIDATORS).indexOf(operator) > -1;
-  }
-  // query validators
-  var VALIDATORS = {
+
+  var MATCHERS = {
     $and: function(a, b, strict) {
       if (!isArray(b, true)) {
-        return false;
+        throw new Error("Invalid argument type");
       }
-      var i;
-      for (i = 0; i < b.length; i++) {
+      for (var i = 0; i < b.length; i++) {
         if (!isObject(b[i], true)) {
-          return false;
+          throw new Error("Invalid argument type");
         }
-      }
-      return true;
-    },
-    $or: function(a, b, strict) {
-      if (!isArray(b, true)) {
-        return false;
-      }
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (!isObject(b[i], true)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    $nor: function(a, b, strict) {
-      if (!isArray(b, true)) {
-        return false;
-      }
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (!isObject(b[i], true)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    $not: function(a, b, strict) {
-      return isObject(b, true);
-    },
-    $in: function(a, b, strict) {
-      if (!isArray(b, true)) {
-        return false;
-      }
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (!isItem(b[i], true)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    $nin: function(a, b, strict) {
-      if (!isArray(b, true)) {
-        return false;
-      }
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (!isItem(b[i], true)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    $gt: function(a, b, strict) {
-      if (!isNumber(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $gte: function(a, b, strict) {
-      if (!isNumber(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $lt: function(a, b, strict) {
-      if (!isNumber(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $lte: function(a, b, strict) {
-      if (!isNumber(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $mod: function(a, b, strict) {
-      if (!isArray(b, true) || b.length !== 2) {
-        return false;
-      }
-      if (!isNumber(b[0], strict)) {
-        return false;
-      }
-      if (!isNumber(b[1], strict)) {
-        return false;
-      }
-      return true;
-    },
-    $eq: function(a, b, strict) {
-      return true;
-    },
-    $ne: function(a, b, strict) {
-      return true;
-    },
-    $exists: function(a, b, strict) {
-      if (!isBoolean(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $regexp: function(a, b, strict) {
-      if (!isRegExp(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-    $size: function(a, b, strict) {
-      if (!isNumber(b, strict)) {
-        return false;
-      }
-      return true;
-    },
-  }
-  // query operators
-  var OPERATORS = {
-    $and: function(a, b, strict) {
-      var i;
-      for (i = 0; i < b.length; i++) {
         if (!execQuery(a, b[i], strict)) {
           return false;
         }
       }
+      for (i = 0; i < b.length; i++) {
+        
+      }
       return true;
     },
     $or: function(a, b, strict) {
-      var i;
-      for (i = 0; i < b.length; i++) {
+      if (!isArray(b, true)) {
+        throw new Error("Invalid argument type");
+      }
+      for (var i = 0; i < b.length; i++) {
+        if (!isObject(b[i], true)) {
+          throw new Error("Invalid argument type");
+        }
         if (execQuery(a, b[i], strict)) {
           return true;
         }
@@ -478,8 +363,13 @@
       return false;
     },
     $nor: function(a, b, strict) {
-      var i;
-      for (i = 0; i < b.length; i++) {
+      if (!isArray(b, true)) {
+        throw new Error("Invalid argument type");
+      }
+      for (var i = 0; i < b.length; i++) {
+        if (!isObject(b[i], true)) {
+          throw new Error("Invalid argument type");
+        }
         if (execQuery(a, b[i], strict)) {
           return false;
         }
@@ -487,51 +377,85 @@
       return true;
     },
     $not: function(a, b, strict) {
+      if (!isObject(b, true)) {
+        throw new Error("Invalid argument type");
+      }
       return !execQuery(a, b, strict);
     },
     $in: function(a, b, strict) {
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (calcQuery(a, b[i], "$eq", strict)) {
+      if (!isArray(b, true)) {
+        throw new Error("Invalid argument type");
+      }
+      for (var i = 0; i < b.length; i++) {
+        if (!isItem(b[i], true)) {
+          throw new Error("Invalid argument type");
+        }
+        if (matchQuery(a, b[i], "$eq", strict)) {
           return true;
         }
       }
       return false;
     },
     $nin: function(a, b, strict) {
-      var i;
-      for (i = 0; i < b.length; i++) {
-        if (calcQuery(a, b[i], "$eq", strict)) {
+      if (!isArray(b, true)) {
+        throw new Error("Invalid argument type");
+      }
+      for (var i = 0; i < b.length; i++) {
+        if (!isItem(b[i], true)) {
+          throw new Error("Invalid argument type");
+        }
+        if (matchQuery(a, b[i], "$eq", strict)) {
           return false;
         }
       }
       return true;
     },
     $gt: function(a, b, strict) {
+      if (!isNumber(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isNumber(a, strict)) {
         return false;
       }
       return toNumber(a) > toNumber(b);
     },
     $gte: function(a, b, strict) {
+      if (!isNumber(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isNumber(a, strict)) {
         return false;
       }
       return toNumber(a) >= toNumber(b);
     },
     $lt: function(a, b, strict) {
+      if (!isNumber(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isNumber(a, strict)) {
         return false;
       }
       return toNumber(a) < toNumber(b);
     },
     $lte: function(a, b, strict) {
+      if (!isNumber(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isNumber(a, strict)) {
         return false;
       }
       return toNumber(a) <= toNumber(b);
     },
     $mod: function(a, b, strict) {
+      if (!isArray(b, true) || b.length !== 2) {
+        throw new Error("Invalid argument type");
+      }
+      if (!isNumber(b[0], strict)) {
+        throw new Error("Invalid argument type");
+      }
+      if (!isNumber(b[1], strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isNumber(a, strict)) {
         return false;
       }
@@ -556,9 +480,8 @@
         if (a.length !== b.length) {
           return false;
         }
-        var i;
-        for (i = 0; i < b.length; i++) {
-          if (!calcQuery(a[i], b[i], "$eq", strict)) {
+        for (var i = 0; i < b.length; i++) {
+          if (!matchQuery(a[i], b[i], "$eq", strict)) {
             return false;
           }
         }
@@ -583,9 +506,8 @@
         if (a.length !== b.length) {
           return true;
         }
-        var i;
-        for (i = 0; i < b.length; i++) {
-          if (!calcQuery(a[i], b[i], "$eq", strict)) {
+        for (var i = 0; i < b.length; i++) {
+          if (!matchQuery(a[i], b[i], "$eq", strict)) {
             return true;
           }
         }
@@ -595,90 +517,28 @@
       }
     },
     $exists: function(a, b, strict) {
+      if (!isBoolean(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       return (a !== undefined && a !== null) && toBoolean(b);
     },
     $regexp: function(a, b, strict) {
+      if (!isRegExp(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       return toRegExp(b).test(a);
     },
     $size: function(a, b, strict) {
+      if (!isNumber(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
       if (!isArray(a, true)) {
         return false;
       }
       return a.length === toNumber(b);
     },
   }
-  /**
-   * 
-   * @param {any} a data
-   * @param {any} b query
-   * @param {string} key
-   * @param {boolean} strict 
-   * @returns 
-   */
-  var chkQuery = function(a, b, key, strict) {
-    var operator, parts, part;
-
-    if (isString(key, true)) {
-      parts = key.split("\."); // dot notation
-    } else if (isArray(key, true)) {
-      parts = key;
-    } else {
-      return false; // error
-    }
-
-    part = parts.shift();
-    if (parts.length > 0) {
-      return chkQuery(a[part], b, parts, strict);
-    } else {
-      operator = part;
-    }
-
-    switch (operator) {
-      case "$and":
-        return VALIDATORS.$and(a, b, strict);
-      case "$or":
-        return VALIDATORS.$or(a, b, strict);
-      case "$nor":
-        return VALIDATORS.$nor(a, b, strict);
-      case "$not":
-        return VALIDATORS.$not(a, b, strict);
-      case "$eq":
-        return VALIDATORS.$eq(a, b, strict);
-      case "$ne":
-        return VALIDATORS.$ne(a, b, strict);
-      case "$in":
-        return VALIDATORS.$in(a, b, strict);
-      case "$nin":
-        return VALIDATORS.$nin(a, b, strict);
-      case "$gt":
-        return VALIDATORS.$gt(a, b, strict);
-      case "$gte":
-        return VALIDATORS.$gte(a, b, strict);
-      case "$lt":
-        return VALIDATORS.$lt(a, b, strict);
-      case "$lte":
-        return VALIDATORS.$lte(a, b, strict);
-      case "$mod":
-        return VALIDATORS.$mod(a, b, strict);
-      case "$exists":
-        return VALIDATORS.$exists(a, b, strict);
-      case "$regexp":
-        return VALIDATORS.$regexp(a, b, strict);
-      case "$size":
-        return VALIDATORS.$size(a, b, strict);
-      default:
-        return true;
-    }
-  }
-  /**
-   * 
-   * @param {any} a data
-   * @param {any} b query
-   * @param {string} key 
-   * @param {boolean} strict 
-   * @returns 
-   */
-  var calcQuery = function(a, b, key, strict) {
+  var matchQuery = function(a, b, key, strict) {
     var operator, parts, part;
 
     if (isString(key, true)) {
@@ -691,80 +551,99 @@
 
     part = parts.shift();
     if (parts.length > 0) {
-      return calcQuery(a[part], b, parts, strict);
+      return matchQuery(a[part], b, parts, strict);
     } else {
       operator = part;
     }
 
     switch (operator) {
       case "$and":
-        return OPERATORS.$and(a, b, strict);
+        return MATCHERS.$and(a, b, strict);
       case "$or":
-        return OPERATORS.$or(a, b, strict);
+        return MATCHERS.$or(a, b, strict);
       case "$nor":
-        return OPERATORS.$nor(a, b, strict);
+        return MATCHERS.$nor(a, b, strict);
       case "$not":
-        return OPERATORS.$not(a, b, strict);
+        return MATCHERS.$not(a, b, strict);
       case "$eq":
-        return OPERATORS.$eq(a, b, strict); // equal
+        return MATCHERS.$eq(a, b, strict); // equal
       case "$ne":
-        return OPERATORS.$ne(a, b, strict); // not equal
+        return MATCHERS.$ne(a, b, strict); // not equal
       case "$in":
-        return OPERATORS.$in(a, b, strict); // include
+        return MATCHERS.$in(a, b, strict); // include
       case "$nin":
-        return OPERATORS.$nin(a, b, strict); // exclude
+        return MATCHERS.$nin(a, b, strict); // exclude
       case "$gt":
-        return OPERATORS.$gt(a, b, strict); // greater than
+        return MATCHERS.$gt(a, b, strict); // greater than
       case "$gte":
-        return OPERATORS.$gte(a, b, strict); // greater than or equal
+        return MATCHERS.$gte(a, b, strict); // greater than or equal
       case "$lt":
-        return OPERATORS.$lt(a, b, strict); // less than or equal
+        return MATCHERS.$lt(a, b, strict); // less than or equal
       case "$lte":
-        return OPERATORS.$lte(a, b, strict); // less than or equal
+        return MATCHERS.$lte(a, b, strict); // less than or equal
       case "$mod":
-        return OPERATORS.$mod(a, b, strict); // modulo
+        return MATCHERS.$mod(a, b, strict); // modulo
       case "$exists":
-        return OPERATORS.$exists(a, b, strict); // not null or undefined
+        return MATCHERS.$exists(a, b, strict); // not null or undefined
       case "$regexp":
-        return OPERATORS.$regexp(a, b, strict); // RegExp.test()
+        return MATCHERS.$regexp(a, b, strict); // RegExp.test()
       case "$size":
-        return OPERATORS.$size(a, b, strict); // Array.length
+        return MATCHERS.$size(a, b, strict); // Array.length
       default:
         if (!isObject(a, true)) {
           return false;
         } else if (isObject(b, true)) {
           return execQuery(a[operator], b, strict);
         } else {
-          return calcQuery(a[operator], b, "$eq", strict);
+          return matchQuery(a[operator], b, "$eq", strict);
         }
     }
   }
-  /**
-   * 
-   * @param {any} a 
-   * @param {object|string} b object or string json
-   * @param {boolean|undefined} strict 
-   * @returns 
-   */
+
   var execQuery = function(a, b, strict) {
     if (!isObject(b, strict)) {
-      return false;
+      throw new Error("Invalid argument type");
+    }
+    if (!isUndefined(strict, true) && !isBoolean(strict, true)) {
+      throw new Error("Invalid argument type");
     }
     var arr = Object.entries(toObject(b)), i, key, value;
     for (i = 0; i < arr.length; i++) {
       key = arr[i][0];
       value = arr[i][1];
-      if (!chkQuery(a, value, key, strict)) {
-        throw new Error("Invalid argument type");
-      }
-      if (!calcQuery(a, value, key, strict)) {
+      if (!matchQuery(a, value, key, strict)) {
         return false;
       }
     }
     return true;
   }
 
+  var updateObject = function(a, b, scheme) {
+    if (!isObject(a, true)) {
+      throw new Error("Invalid argument type");
+    }
+    if (!isObject(b, true)) {
+      throw new Error("Invalid argument type");
+    }
+    if (!isUndefined(scheme, true) && !isObject(scheme, true)) {
+      throw new Error("Invalid argument type");
+    }
+
+  }
+
   return {
-    exec: execQuery
+    /**
+     * 
+     * @param {object} a data
+     * @param {object|string} b object or jsonString
+     * @param {boolean|undefined} strict 
+     * @returns 
+     */
+    match: function(a, b, strict) {
+      if (!isObject(a, true)) {
+        throw new Error("Invalid argument type");
+      }
+      return execQuery(a, b, strict);
+    }
   }
 });

@@ -5,7 +5,7 @@ import jsQry from 'js-qry';
 ```
 
 ```js
-jsQry.exec(data, query); // return boolean
+jsQry.match(data, query); // return boolean
 ```
 
 ```js
@@ -76,7 +76,7 @@ var query = {
     }]
 }
 
-jsQry.exec(data, query); // true
+jsQry.match(data, query); // true
 ```
 
 - Strict
@@ -90,14 +90,22 @@ var query = {
     id: "1"
 }
 
-var isStrict = true;
-// Prevent convert boolean string => "true" to true
-// Prevent convert number string => "1" to 1
-// Prevent convert array items => ["true", "1"] to [true, 1]
-// Prevent convert RegExp string => "/Mike/i" to /Mike/i 
+var strict = true;
 
-jsQry.exec(data, query); // true
-jsQry.exec(data, query, isStrict); // false
+jsQry.match(data, query); // true
+jsQry.match(data, query, strict); // false
+
+// String "undefined" to undefined
+// String "null" to null
+// String "true" to true
+// String "1" to 1
+// Number 1 to "1"
+// Number 1 to true
+// Boolean true to 1
+// Boolean true to "true"
+// Array ["true", "1"] to [true, 1]
+// RegExp "/Mike/i" to /Mike/i 
+// ...
 ```
 
 #### Operators
