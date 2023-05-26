@@ -618,19 +618,6 @@
     return true;
   }
 
-  var updateObject = function(a, b, scheme) {
-    if (!isObject(a, true)) {
-      throw new Error("Invalid argument type");
-    }
-    if (!isObject(b, true)) {
-      throw new Error("Invalid argument type");
-    }
-    if (!isUndefined(scheme, true) && !isObject(scheme, true)) {
-      throw new Error("Invalid argument type");
-    }
-
-  }
-
   return {
     /**
      * 
