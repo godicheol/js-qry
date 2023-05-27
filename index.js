@@ -464,12 +464,9 @@
     $eq: function(a, b, strict) {
       if (!strict) {
         if (isNumber(a) && isNumber(b)) {
-          // number string to number
-          // boolean to 0, 1
           a = toNumber(a);
           b = toNumber(b);
         } else if (isBoolean(a) && isBoolean(b)) {
-          // "true", "false" to boolean
           a = toBoolean(a);
           b = toBoolean(b);
         }
@@ -537,9 +534,15 @@
       }
       return a.length === toNumber(b);
     },
+    $func: function(a, b, strict) {
+      if (!isFunction(b, strict)) {
+        throw new Error("Invalid argument type");
+      }
+      return b(a, strict);
+    },
   }
   var matchQuery = function(a, b, key, strict) {
-    var operator, parts, part;
+    var parts, part;
 
     if (isString(key, true)) {
       parts = key.split("\."); // dot notation
@@ -549,7 +552,7 @@
       throw new Error("Invalid argument type");
     }
 
-    part = parts.shift();
+    part = parts.shift(); // operator
     if (parts.length > 0) {
       if (isObject(a, true)) {
         return matchQuery(a[part], b, parts, strict);
@@ -557,8 +560,7 @@
         return matchQuery(undefined, b, parts, strict);
       }
     }
-    operator = part;
-    switch (operator) {
+    switch (part) {
       case "$and":
         return MATCHERS.$and(a, b, strict);
       case "$or":
@@ -591,13 +593,15 @@
         return MATCHERS.$regexp(a, b, strict); // RegExp.test()
       case "$size":
         return MATCHERS.$size(a, b, strict); // Array.length
+      case "$func":
+        return MATCHERS.$func(a, b, strict); // b(a)
       default:
         if (!isObject(a, true)) {
           return false;
         } else if (isObject(b, true)) {
-          return execQuery(a[operator], b, strict);
+          return execQuery(a[part], b, strict);
         } else {
-          return matchQuery(a[operator], b, "$eq", strict);
+          return matchQuery(a[part], b, "$eq", strict);
         }
     }
   }

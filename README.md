@@ -126,3 +126,4 @@ jsQry.match(data, query, strict); // false
 - $exists
 - $regexp
 - $size
+- $func

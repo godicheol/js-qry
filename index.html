@@ -120,7 +120,13 @@
                 }
             }, {
                 "size.height": 100
-            }]
+            }],
+            // function
+            name: {
+                $func: function(value) {
+                    return value === "mike";
+                }
+            }
         }
 
         document.querySelector("#data-textarea").value = JSON.stringify([__data], null, 2);
@@ -528,10 +534,23 @@
         );
 
         console.log(
-            "$mod:",
+            "$func:",
             jsQry.match(__data, {
                 age: {
-                    $mod: [3, 2]
+                    $func: function(a) {
+                        return a === 10
+                    }
+                }
+            }, true)
+        );
+
+        console.log(
+            "$func:",
+            jsQry.match(__data, {
+                age: {
+                    $func: function(a) {
+                        return a !== 10
+                    }
                 }
             }, true)
         );
@@ -553,7 +572,7 @@
         console.log(
             "dot notation:",
             jsQry.match(__data, {
-                "attributes.size.value.$exists": false,
+                "size.weight.size": 100,
                 "attributes.size.length.isLength": true,
                 "attributes.size.length.value": 10,
             })
