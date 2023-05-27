@@ -520,7 +520,7 @@
       if (!isBoolean(b, strict)) {
         throw new Error("Invalid argument type");
       }
-      return (a !== undefined && a !== null) && toBoolean(b);
+      return (a !== undefined && a !== null) === toBoolean(b);
     },
     $regexp: function(a, b, strict) {
       if (!isRegExp(b, strict)) {
@@ -551,11 +551,13 @@
 
     part = parts.shift();
     if (parts.length > 0) {
-      return matchQuery(a[part], b, parts, strict);
-    } else {
-      operator = part;
+      if (isObject(a, true)) {
+        return matchQuery(a[part], b, parts, strict);
+      } else {
+        return matchQuery(undefined, b, parts, strict);
+      }
     }
-
+    operator = part;
     switch (operator) {
       case "$and":
         return MATCHERS.$and(a, b, strict);

@@ -550,6 +550,15 @@
             })
         )
 
+        console.log(
+            "dot notation:",
+            jsQry.match(__data, {
+                "attributes.size.value.$exists": false,
+                "attributes.size.length.isLength": true,
+                "attributes.size.length.value": 10,
+            })
+        )
+
     </script>
 </body>
 
